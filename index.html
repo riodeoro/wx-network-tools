@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>wx network tools</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛅</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+      background: #f1f5f9;
+      color: #1e293b;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 44px;
+      padding: 0 20px;
+      background: #f8fafc;
+      border-bottom: 2px solid #3b82f6;
+      font-size: 13px;
+    }
+
+    nav .brand {
+      font-weight: 600;
+      font-size: 15px;
+      color: #1e293b;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+    }
+
+    nav .links {
+      display: flex;
+      gap: 20px;
+    }
+
+    nav .links a {
+      color: #64748b;
+      text-decoration: none;
+      padding: 2px 0;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+
+    nav .links a:hover {
+      color: #1e293b;
+    }
+
+    nav .links a.active {
+      color: #3b82f6;
+      border-bottom-color: #3b82f6;
+    }
+
+    .view {
+      width: 100%;
+      height: calc(100vh - 44px);
+      position: absolute;
+      top: 44px;
+      left: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .view.active {
+      visibility: visible;
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    .embed-frame {
+      width: calc(100% / 1.05);
+      height: calc((100vh - 44px) / 1.05);
+      border: none;
+      transform: scale(1.05);
+      transform-origin: top left;
+    }
+
+    .landing {
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 40px 20px;
+      background: #f1f5f9;
+    }
+
+    .landing h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .landing p {
+      color: #64748b;
+      font-size: 13px;
+      margin-bottom: 32px;
+    }
+
+    .cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: nowrap;
+    }
+
+    .card {
+      display: block;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 24px 28px;
+      width: 260px;
+      text-decoration: none;
+      color: #1e293b;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.12);
+    }
+
+    .card .icon { font-size: 28px; margin-bottom: 10px; }
+    .card .title { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+    .card .desc { color: #64748b; font-size: 12px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="brand" data-view="home">wx network tools</a>
+    <div class="links">
+      <a data-view="latency">latency</a>
+      <a data-view="alerts">alerts</a>
+      <a data-view="trace">trace</a>
+    </div>
+  </nav>
+
+  <div id="view-home" class="view active">
+    <div class="landing">
+      <img src="station.png" alt="station" style="width: 130px; margin-bottom: 16px;">
+      <h2>wx network tools</h2>
+      <p>fire weather station monitoring</p>
+      <div class="cards">
+        <a class="card" data-view="latency">
+          <div class="icon">📡</div>
+          <div class="title">data latency</div>
+          <div class="desc">Live data latency status by fire centre.</div>
+        </a>
+        <a class="card" data-view="alerts">
+          <div class="icon">🌦️</div>
+          <div class="title">alerts dashboard</div>
+          <div class="desc">Automated diagnostics across RH, wind, temp, precip, and power by fire centre.</div>
+        </a>
+        <a class="card" data-view="trace">
+          <div class="icon">📈</div>
+          <div class="title">predicate trace</div>
+          <div class="desc">Query historical hourly data with custom conditions across stations and years.</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-alerts" class="view">
+    <iframe id="frame-alerts" class="embed-frame"></iframe>
+  </div>
+
+  <div id="view-trace" class="view">
+    <iframe id="frame-trace" class="embed-frame"></iframe>
+  </div>
+
+  <div id="view-latency" class="view">
+    <iframe id="frame-latency" class="embed-frame"></iframe>
+  </div>
+
+  <script>
+    const SOURCES = {
+      alerts:  'https://rdo-prod-wx-alerts-dashboard.hf.space',
+      trace:   'https://rdo-prod-wx-predicate-trace.hf.space',
+      latency: 'https://rdo-prod-wx-data-latency.hf.space'
+    };
+
+    const loaded = { alerts: false, trace: false, latency: false };
+
+    function switchView(name) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-' + name).classList.add('active');
+
+      document.querySelectorAll('.links a').forEach(a => a.classList.remove('active'));
+      const navLink = document.querySelector(`.links a[data-view="${name}"]`);
+      if (navLink) navLink.classList.add('active');
+
+      if (SOURCES[name] && !loaded[name]) {
+        document.getElementById('frame-' + name).src = SOURCES[name];
+        loaded[name] = true;
+      }
+
+      const titles = { home: 'wx network tools', alerts: 'wx network tools — alerts', trace: 'wx network tools — trace', latency: 'wx network tools — latency' };
+      document.title = titles[name] || 'wx network tools';
+
+      history.pushState(null, '', name === 'home' ? '#' : '#' + name);
+    }
+
+    document.addEventListener('click', e => {
+      const trigger = e.target.closest('[data-view]');
+      if (trigger) {
+        e.preventDefault();
+        switchView(trigger.dataset.view);
+      }
+    });
+
+    window.addEventListener('popstate', () => {
+      const hash = location.hash.replace('#', '') || 'home';
+      switchView(hash);
+    });
+
+    const initial = location.hash.replace('#', '') || 'home';
+    if (initial !== 'home') switchView(initial);
+  </script>
+</body>
+</html>
