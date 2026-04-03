@@ -144,6 +144,7 @@
       <a data-view="alerts">alerts</a>
       <a data-view="trace">trace</a>
       <a data-view="downloader">downloader</a>
+      <a data-view="gallery">gallery</a>
     </div>
   </nav>
 
@@ -173,6 +174,11 @@
           <div class="title">datamart downloader</div>
           <div class="desc">Download historical weather observations by station from the BC Wildfire Datamart.</div>
         </a>
+        <a class="card" data-view="gallery">
+          <div class="icon">📷</div>
+          <div class="title">station photos</div>
+          <div class="desc">Browse maintenance visit photos by fire centre and station.</div>
+        </a>
       </div>
     </div>
   </div>
@@ -193,15 +199,20 @@
     <iframe id="frame-downloader" class="embed-frame"></iframe>
   </div>
 
+  <div id="view-gallery" class="view">
+    <iframe id="frame-gallery" class="embed-frame"></iframe>
+  </div>
+
   <script>
     const SOURCES = {
       alerts:     'https://rdo-prod-wx-alerts-dashboard.hf.space',
       trace:      'https://rdo-prod-wx-predicate-trace.hf.space',
       latency:    'https://rdo-prod-wx-data-latency.hf.space',
-      downloader: 'https://rdo-prod-datamart-downloader.hf.space'
+      downloader: 'https://rdo-prod-datamart-downloader.hf.space',
+      gallery:    'https://rdo-prod-wx-gallery.hf.space'
     };
 
-    const loaded = { alerts: false, trace: false, latency: false, downloader: false };
+    const loaded = { alerts: false, trace: false, latency: false, downloader: false, gallery: false };
 
     function switchView(name) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -216,7 +227,7 @@
         loaded[name] = true;
       }
 
-      const titles = { home: 'wx network tools', alerts: 'wx network tools — alerts', trace: 'wx network tools — trace', latency: 'wx network tools — latency', downloader: 'wx network tools — downloader' };
+      const titles = { home: 'wx network tools', alerts: 'wx network tools — alerts', trace: 'wx network tools — trace', latency: 'wx network tools — latency', downloader: 'wx network tools — downloader', gallery: 'wx network tools — gallery' };
       document.title = titles[name] || 'wx network tools';
 
       history.pushState(null, '', name === 'home' ? '#' : '#' + name);
