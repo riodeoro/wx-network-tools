@@ -143,6 +143,7 @@
       <a data-view="latency">latency</a>
       <a data-view="alerts">alerts</a>
       <a data-view="trace">trace</a>
+      <a data-view="scatter">scatter</a>
       <a data-view="downloader">downloader</a>
       <a data-view="gallery">gallery</a>
     </div>
@@ -168,6 +169,11 @@
           <div class="icon">📈</div>
           <div class="title">predicate trace</div>
           <div class="desc">Query historical hourly data with custom conditions across stations and years.</div>
+        </a>
+        <a class="card" data-view="scatter">
+          <div class="icon">🎲</div>
+          <div class="title">wx scatter</div>
+          <div class="desc">Explore 3D variable relationships across multiple attributes.</div>
         </a>
         <a class="card" data-view="downloader">
           <div class="icon">🛒</div>
@@ -195,6 +201,10 @@
     <iframe id="frame-latency" class="embed-frame"></iframe>
   </div>
 
+  <div id="view-scatter" class="view">
+    <iframe id="frame-scatter" class="embed-frame"></iframe>
+  </div>
+
   <div id="view-downloader" class="view">
     <iframe id="frame-downloader" class="embed-frame"></iframe>
   </div>
@@ -208,11 +218,12 @@
       alerts:     'https://rdo-prod-wx-alerts-dashboard.hf.space',
       trace:      'https://rdo-prod-wx-predicate-trace.hf.space',
       latency:    'https://rdo-prod-wx-data-latency.hf.space',
+      scatter:    'https://rdo-prod-wx-scatter.hf.space',
       downloader: 'https://rdo-prod-datamart-downloader.hf.space',
       gallery:    'https://rdo-prod-wx-gallery.hf.space'
     };
 
-    const loaded = { alerts: false, trace: false, latency: false, downloader: false, gallery: false };
+    const loaded = { alerts: false, trace: false, latency: false, scatter: false, downloader: false, gallery: false };
 
     function switchView(name) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
