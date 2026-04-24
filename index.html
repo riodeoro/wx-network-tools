@@ -248,6 +248,7 @@
       <a data-view="latency">latency</a>
       <a data-view="alerts">alerts</a>
       <a data-view="trace">trace</a>
+      <a data-view="moisture">moisture</a>
       <div class="more-wrap" id="moreWrap">
         <span class="more-toggle" id="moreToggle">more <span class="chevron">▼</span></span>
         <div class="more-menu" id="moreMenu">
@@ -280,6 +281,11 @@
           <div class="icon">📈</div>
           <div class="title">predicate trace</div>
           <div class="desc">Query historical hourly data with custom conditions across stations and years.</div>
+        </a>
+        <a class="card primary" data-view="moisture">
+          <div class="icon">💧</div>
+          <div class="title">CFFDRS moisture</div>
+          <div class="desc">CFFDRS moisture content conversions, field comparison tools, and soil moisture analysis.</div>
         </a>
       </div>
 
@@ -327,6 +333,10 @@
     <iframe id="frame-gallery" class="embed-frame"></iframe>
   </div>
 
+  <div id="view-moisture" class="view">
+    <iframe id="frame-moisture" class="embed-frame"></iframe>
+  </div>
+
   <script>
     const SOURCES = {
       alerts:     'https://rdo-prod-wx-alerts-dashboard.hf.space',
@@ -334,7 +344,8 @@
       latency:    'https://rdo-prod-wx-data-latency.hf.space',
       scatter:    'https://rdo-prod-wx-scatter.hf.space',
       downloader: 'https://rdo-prod-datamart-downloader.hf.space',
-      gallery:    'https://rdo-prod-wx-gallery.hf.space'
+      gallery:    'https://rdo-prod-wx-gallery.hf.space',
+      moisture:   'https://rdo-prod1-cffdrs-moisture-content-conversions.hf.space'
     };
 
     const loaded = {};
