@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>WX Tools</title>
   <link rel="icon" href="station.png">
   <style>
@@ -16,6 +17,9 @@
       height: 100%;
       border: none;
       display: block;
+    }
+    @supports (height: 100dvh) {
+      html, body { height: 100dvh; }
     }
   </style>
 </head>
